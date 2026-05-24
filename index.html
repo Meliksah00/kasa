@@ -3,52 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CS Case Opening</title>
+<title>CS Case System</title>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+
 body{
-margin:0;
-font-family:Arial;
-background:url("https://images.unsplash.com/photo-1542751371-adc38448a05e") center/cover no-repeat;
-color:white;
-overflow-x:hidden;
+height:100vh;
+overflow:hidden;
+}
+
+.bg{
+position:absolute;
+width:100%;
+height:100%;
+background:url("https://images.unsplash.com/photo-1605901309584-818e25960a8f") center/cover no-repeat;
+filter:brightness(0.3);
 }
 
 .overlay{
-position:fixed;
+position:absolute;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.75);
-backdrop-filter:blur(4px);
+background:linear-gradient(90deg,rgba(0,0,0,0.85) 40%,rgba(0,0,0,0.2));
 }
 
-.center{
+.container{
 position:relative;
-text-align:center;
-padding:30px;
+display:flex;
+height:100vh;
+color:white;
 }
 
-.box{
+/* LOGIN */
+.left{
+width:40%;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.panel{
+width:320px;
+padding:25px;
 background:rgba(255,255,255,0.08);
-padding:20px;
-width:300px;
-margin:10px auto;
+backdrop-filter:blur(12px);
 border-radius:15px;
-backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.1);
 }
 
 input{
-width:90%;
+width:100%;
 padding:10px;
-margin:5px;
+margin:6px 0;
 border:none;
 border-radius:8px;
+background:rgba(255,255,255,0.1);
+color:white;
 }
 
 button{
+width:100%;
 padding:10px;
-width:95%;
-margin-top:10px;
+margin-top:8px;
 border:none;
 border-radius:10px;
 background:#3b82f6;
@@ -56,122 +73,123 @@ color:white;
 cursor:pointer;
 }
 
-.hidden{display:none;}
+/* RIGHT */
+.right{
+width:60%;
+padding:40px;
+}
+
+.title{
+font-size:50px;
+font-weight:bold;
+text-shadow:0 0 20px #3b82f6;
+}
+
+.menu{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+padding:15px;
+border-radius:12px;
+cursor:pointer;
+}
+
+#game{
+display:none;
+}
 
 .caseArea{
 display:flex;
-justify-content:center;
-gap:20px;
-flex-wrap:wrap;
+gap:10px;
 margin-top:20px;
+flex-wrap:wrap;
 }
 
 .case{
-background:rgba(255,255,255,0.06);
+background:rgba(255,255,255,0.08);
 padding:15px;
-border-radius:12px;
-width:200px;
-}
-
-#roulette{
-margin:20px auto;
-width:400px;
-height:80px;
-border:2px solid #3b82f6;
-overflow:hidden;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:20px;
-border-radius:10px;
-}
-
-.inv{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:10px;
-margin-top:20px;
-}
-
-.item{
-background:rgba(255,255,255,0.1);
-padding:10px;
 width:180px;
 border-radius:10px;
 }
 
-.small{
-font-size:12px;
-color:#ccc;
+#roulette{
+margin-top:20px;
+height:60px;
+border:2px solid #3b82f6;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:10px;
+font-size:18px;
 }
 
-.admin{
-background:red;
+.inv{
+margin-top:20px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.item{
+width:160px;
+background:rgba(255,255,255,0.08);
 padding:10px;
 border-radius:10px;
-margin-top:10px;
-cursor:pointer;
 }
+
+.small{font-size:12px;color:#aaa}
 </style>
 </head>
 
 <body>
 
+<div class="bg"></div>
 <div class="overlay"></div>
 
-<div class="center">
-
-<h1>🔥 CS CASE OPENING</h1>
+<div class="container">
 
 <!-- LOGIN -->
-<div id="loginBox" class="box">
-<h3>Giriş Yap</h3>
-<input id="lu" placeholder="Kullanıcı">
-<input id="lp" placeholder="Şifre">
+<div class="left" id="login">
+<div class="panel">
+<h2>🔐 LOGIN</h2>
+<input id="u" placeholder="Kullanıcı">
+<input id="p" placeholder="Şifre">
 <button onclick="login()">Giriş</button>
-<p onclick="showReg()">Kayıt Ol</p>
+<button onclick="register()" style="background:#22c55e">Kayıt Ol</button>
 </div>
-
-<!-- REGISTER -->
-<div id="regBox" class="box hidden">
-<h3>Kayıt Ol</h3>
-<input id="ru" placeholder="Kullanıcı">
-<input id="rp" placeholder="Şifre">
-<button onclick="register()">Kayıt Ol</button>
-<p onclick="showLogin()">Giriş Yap</p>
 </div>
 
 <!-- GAME -->
-<div id="game" class="hidden">
+<div class="right" id="game">
 
-<h2>Hoşgeldin <span id="user"></span></h2>
+<div class="title">🔥 CS CASE SYSTEM</div>
+
 <h3>💰 Coin: <span id="coin">0</span></h3>
 
-<div id="adminPanel" class="admin hidden" onclick="giveCoin()">
-ADMIN PANEL (Coin Ver)
+<div id="admin" style="display:none;background:red;padding:10px;border-radius:10px;cursor:pointer;width:200px;margin-top:10px" onclick="giveCoin()">
+ADMIN PANEL
 </div>
 
-<h2>KASALAR</h2>
-
 <div class="caseArea">
-
 <div class="case">
-<h3>Normal Case - 100$</h3>
+Normal Case (100$)
 <button onclick="openCase(100)">Aç</button>
 </div>
 
 <div class="case">
-<h3>Epic Case - 300$</h3>
+Epic Case (300$)
 <button onclick="openCase(300)">Aç</button>
 </div>
-
 </div>
 
 <div id="roulette">🎰 Bekleniyor...</div>
 
-<h2>ENVANTER</h2>
-<div id="inv" class="inv"></div>
+<h3>ENVANTER</h3>
+<div class="inv" id="inv"></div>
 
 </div>
 
@@ -183,47 +201,34 @@ let users = JSON.parse(localStorage.getItem("users")||"{}");
 let current = null;
 
 const items = [
-{name:"AK-47 Redline",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_a_light_blue.1a2c6c1c.png",value:50,chance:40},
-{name:"AWP Asiimov",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp_cu_awp_asimov_light_large.5c2c0.png",value:120,chance:25},
-{name:"M4A1-S Printstream",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_silencer_cu_m4a1s_printstream_light_large.6a3.png",value:200,chance:20},
-{name:"Karambit Fade",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_karambit_a_fade.7d2.png",value:500,chance:15}
+{name:"AK-47 Redline",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_a_light_blue.png",value:50},
+{name:"AWP Asiimov",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp_cu_awp_asimov_light.png",value:120},
+{name:"M4A1-S Printstream",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_silencer_printstream.png",value:200},
+{name:"Karambit Fade",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_karambit_fade.png",value:500}
 ];
 
-function showReg(){
-document.getElementById("loginBox").classList.add("hidden");
-document.getElementById("regBox").classList.remove("hidden");
-}
-
-function showLogin(){
-document.getElementById("regBox").classList.add("hidden");
-document.getElementById("loginBox").classList.remove("hidden");
-}
-
 function register(){
-let u=document.getElementById("ru").value;
-let p=document.getElementById("rp").value;
+let u=document.getElementById("u").value;
+let p=document.getElementById("p").value;
 
 users[u]={pass:p,coin:500,inv:[]};
 localStorage.setItem("users",JSON.stringify(users));
-alert("Kayıt oldu!");
-showLogin();
+alert("Kayıt başarılı");
 }
 
 function login(){
-let u=document.getElementById("lu").value;
-let p=document.getElementById("lp").value;
+let u=document.getElementById("u").value;
+let p=document.getElementById("p").value;
 
-if(!users[u] || users[u].pass!=p) return alert("Hata");
+if(!users[u]||users[u].pass!=p)return alert("Hata");
 
 current=u;
 
-document.getElementById("loginBox").classList.add("hidden");
-document.getElementById("game").classList.remove("hidden");
+document.getElementById("login").style.display="none";
+document.getElementById("game").style.display="block";
 
-document.getElementById("user").innerText=u;
-
-if(u=="admin" && p=="admin"){
-document.getElementById("adminPanel").classList.remove("hidden");
+if(u=="admin"&&p=="admin"){
+document.getElementById("admin").style.display="block";
 }
 
 update();
@@ -232,48 +237,44 @@ update();
 function openCase(price){
 
 let u=users[current];
-if(u.coin<price) return alert("Yetersiz coin");
+if(u.coin<price)return alert("Yetersiz");
 
 u.coin-=price;
 
-let rollInterval = setInterval(()=>{
-let r = items[Math.floor(Math.random()*items.length)];
-document.getElementById("roulette").innerText=r.name;
+let i=0;
+let interval=setInterval(()=>{
+document.getElementById("roulette").innerText=items[i%items.length].name;
+i++;
 },80);
 
 setTimeout(()=>{
-clearInterval(rollInterval);
-
-let won = items[Math.floor(Math.random()*items.length)];
-
-document.getElementById("roulette").innerHTML="🎉 "+won.name;
-
-u.inv.push(won);
-
+clearInterval(interval);
+let w=items[Math.floor(Math.random()*items.length)];
+document.getElementById("roulette").innerText="🎉 "+w.name;
+u.inv.push(w);
 update();
-
-},2500);
+},2000);
 
 }
 
 function update(){
-document.getElementById("coin").innerText=users[current].coin;
+
+let u=users[current];
+
+document.getElementById("coin").innerText=u.coin;
 
 let inv=document.getElementById("inv");
 inv.innerHTML="";
 
-users[current].inv.forEach((i,idx)=>{
+u.inv.forEach((i,idx)=>{
 let div=document.createElement("div");
 div.className="item";
-
 div.innerHTML=`
 <img src="${i.img}" width="100"><br>
 <b>${i.name}</b><br>
 💰 $${i.value}<br>
 <button onclick="sell(${idx})">Sat</button>
-<button onclick="keep(${idx})">Envanter</button>
 `;
-
 inv.appendChild(div);
 });
 
@@ -282,19 +283,14 @@ localStorage.setItem("users",JSON.stringify(users));
 
 function sell(i){
 let u=users[current];
-let item=u.inv[i];
-u.coin+=item.value;
+u.coin+=u.inv[i].value;
 u.inv.splice(i,1);
 update();
 }
 
-function keep(i){
-alert("Zaten envanterde 👍");
-}
-
 function giveCoin(){
-let add=prompt("Kaç coin verilecek?");
-users[current].coin+=Number(add);
+let a=prompt("Coin:");
+users[current].coin+=Number(a);
 update();
 }
 
