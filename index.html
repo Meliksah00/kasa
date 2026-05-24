@@ -3,135 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CS Case System</title>
+<title>CS Dashboard</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
 
 body{
-height:100vh;
-overflow:hidden;
-}
-
-/* CS2 BACKGROUND */
-.bg{
-position:absolute;
-width:100%;
-height:100%;
-background:url("https://cdn.cloudflare.steamstatic.com/steam/apps/730/ss_0b3d4d1c7b0f5c3d6f1d2.jpg") center/cover no-repeat;
-filter:brightness(0.35);
-}
-
-.overlay{
-position:absolute;
-width:100%;
-height:100%;
-background:linear-gradient(90deg,rgba(0,0,0,0.85) 40%,rgba(0,0,0,0.2));
-}
-
-.container{
-position:relative;
+background:#0b0f1a;
+color:white;
 display:flex;
 height:100vh;
-color:white;
 }
 
-/* LOGIN */
-.left{
-width:40%;
+/* SIDEBAR */
+.sidebar{
+width:250px;
+background:#0f172a;
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.logo{
+font-size:20px;
+font-weight:bold;
+margin-bottom:20px;
+}
+
+.menu{
+padding:12px;
+border-radius:10px;
+cursor:pointer;
+background:rgba(255,255,255,0.05);
+transition:0.2s;
+}
+
+.menu:hover{
+background:#1d4ed8;
+}
+
+/* MAIN */
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+/* TOP BAR */
+.topbar{
+height:60px;
+background:#0f172a;
 display:flex;
 align-items:center;
-justify-content:center;
+justify-content:space-between;
+padding:0 20px;
+border-bottom:1px solid rgba(255,255,255,0.1);
 }
 
-.panel{
-width:320px;
-padding:25px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(12px);
-border-radius:15px;
-border:1px solid rgba(255,255,255,0.1);
-}
-
-input{
-width:100%;
-padding:10px;
-margin:6px 0;
-border:none;
-border-radius:8px;
-background:rgba(255,255,255,0.1);
-color:white;
-}
-
-button{
-width:100%;
-padding:10px;
-margin-top:8px;
-border:none;
+.balance{
+background:#1e293b;
+padding:8px 15px;
 border-radius:10px;
-background:#3b82f6;
-color:white;
+}
+
+/* CONTENT */
+.content{
+flex:1;
+padding:20px;
+overflow:auto;
+}
+
+/* CARDS */
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
+
+.card{
+background:#111827;
+padding:15px;
+border-radius:12px;
+transition:0.2s;
 cursor:pointer;
 }
 
-/* RIGHT */
-.right{
-width:60%;
-padding:40px;
-}
-
-.title{
-font-size:50px;
-font-weight:bold;
-text-shadow:0 0 20px #3b82f6;
-}
-
-/* CASE ROULETTE */
-#roulette{
-margin-top:25px;
-height:90px;
-border:2px solid #3b82f6;
-border-radius:10px;
-overflow:hidden;
-display:flex;
-align-items:center;
-justify-content:center;
-position:relative;
-}
-
-.scroll{
-display:flex;
-gap:10px;
-position:absolute;
-left:0;
-transition:transform 0.08s linear;
-}
-
-.itemBox{
-min-width:120px;
-height:70px;
-background:rgba(255,255,255,0.08);
-border-radius:10px;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-font-size:12px;
+.card:hover{
+transform:translateY(-5px);
+background:#1f2937;
 }
 
 /* INVENTORY */
-.inv{
-margin-top:20px;
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-}
-
 .item{
-width:160px;
-background:rgba(255,255,255,0.08);
+background:#111827;
 padding:10px;
 border-radius:10px;
+margin-top:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+button{
+padding:5px 10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#3b82f6;
+color:white;
 }
 
 </style>
@@ -139,178 +124,135 @@ border-radius:10px;
 
 <body>
 
-<div class="bg"></div>
-<div class="overlay"></div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+<div class="logo">🎮 CS PANEL</div>
 
-<div class="container">
-
-<!-- LOGIN -->
-<div class="left" id="login">
-<div class="panel">
-<h2>🔐 LOGIN</h2>
-<input id="u" placeholder="Kullanıcı">
-<input id="p" placeholder="Şifre">
-<button onclick="login()">Giriş</button>
-<button onclick="register()" style="background:#22c55e">Kayıt</button>
-</div>
+<div class="menu" onclick="show('cases')">🎁 Kasalar</div>
+<div class="menu" onclick="show('inv')">💼 Envanter</div>
+<div class="menu" onclick="show('admin')">⚙️ Admin</div>
 </div>
 
-<!-- GAME -->
-<div class="right" id="game">
+<!-- MAIN -->
+<div class="main">
 
-<div class="title">🔥 CS CASE SYSTEM</div>
-
-<h3>💰 Coin: <span id="coin">0</span></h3>
-
-<div id="admin" style="display:none;background:red;padding:10px;border-radius:10px;cursor:pointer;width:200px;margin-top:10px" onclick="giveCoin()">
-ADMIN PANEL
+<!-- TOP -->
+<div class="topbar">
+<div>🔥 CS2 Case System</div>
+<div class="balance">💰 <span id="coin">1000</span></div>
 </div>
 
-<div>
-<button onclick="openCase(100)">Normal Case</button>
-<button onclick="openCase(300)">Epic Case</button>
+<!-- CONTENT -->
+<div class="content">
+
+<!-- CASES -->
+<div id="cases">
+<h2>Kasalar</h2>
+
+<div class="grid">
+<div class="card" onclick="openCase(100)">Normal Case - 100$</div>
+<div class="card" onclick="openCase(300)">Epic Case - 300$</div>
+<div class="card" onclick="openCase(500)">Legend Case - 500$</div>
 </div>
 
-<!-- CS STYLE ROULETTE -->
-<div id="roulette">
-<div class="scroll" id="scroll"></div>
+<div id="result" style="margin-top:20px"></div>
 </div>
 
-<h3>ENVANTER</h3>
-<div class="inv" id="inv"></div>
-
+<!-- INVENTORY -->
+<div id="inv" style="display:none">
+<h2>Envanter</h2>
+<div id="invList"></div>
 </div>
 
+<!-- ADMIN -->
+<div id="admin" style="display:none">
+<h2>Admin Panel</h2>
+<button onclick="addCoin()">Coin Ver</button>
+</div>
+
+</div>
 </div>
 
 <script>
 
-let users = JSON.parse(localStorage.getItem("users")||"{}");
-let current = null;
+let coin = 1000;
+let inv = [];
 
-const items = [
-{name:"AK-47 Redline",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47.png",value:50},
-{name:"AWP Asiimov",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp.png",value:120},
-{name:"M4A1-S Printstream",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_silencer.png",value:200},
-{name:"Karambit Fade",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_knife_karambit.png",value:500}
-];
+function show(page){
+document.getElementById("cases").style.display="none";
+document.getElementById("inv").style.display="none";
+document.getElementById("admin").style.display="none";
 
-function register(){
-let u=uVal();
-let p=pVal();
-users[u]={pass:p,coin:500,inv:[]};
-save();
+document.getElementById(page).style.display="block";
 }
 
-function login(){
-let u=uVal();
-let p=pVal();
-
-if(!users[u]||users[u].pass!=p)return alert("Hata");
-
-current=u;
-
-document.getElementById("login").style.display="none";
-document.getElementById("game").style.display="block";
-
-if(u=="admin"&&p=="admin"){
-document.getElementById("admin").style.display="block";
-}
-
-update();
-}
-
+/* CASE OPEN */
 function openCase(price){
 
-let u=users[current];
-if(u.coin<price)return alert("Yetersiz");
-
-u.coin-=price;
-
-let scroll=document.getElementById("scroll");
-scroll.innerHTML="";
-
-let loopItems=[];
-
-// CS STYLE BAR
-for(let i=0;i<30;i++){
-let it=items[Math.floor(Math.random()*items.length)];
-loopItems.push(it);
-
-scroll.innerHTML+=`
-<div class="itemBox">
-${it.name}
-</div>
-`;
+if(coin < price){
+alert("Yetersiz coin");
+return;
 }
 
-let pos=0;
-let interval=setInterval(()=>{
-pos-=10;
-scroll.style.transform=`translateX(${pos}px)`;
-},50);
+coin -= price;
+document.getElementById("coin").innerText = coin;
+
+let items = [
+{n:"AK-47 Redline",v:50},
+{n:"AWP Asiimov",v:120},
+{n:"Karambit Fade",v:500}
+];
+
+let roll = setInterval(()=>{
+document.getElementById("result").innerText =
+items[Math.floor(Math.random()*items.length)].n;
+},80);
 
 setTimeout(()=>{
-clearInterval(interval);
+clearInterval(roll);
 
-let won=loopItems[Math.floor(Math.random()*loopItems.length)];
-alert("Kazandın: "+won.name);
+let won = items[Math.floor(Math.random()*items.length)];
 
-u.inv.push(won);
-update();
+document.getElementById("result").innerText = "Kazandın: " + won.n;
 
-},3000);
+inv.push(won);
+},2000);
 
 }
 
-function update(){
+/* INVENTORY */
+function loadInv(){
+let box = document.getElementById("invList");
+box.innerHTML="";
 
-let u=users[current];
-document.getElementById("coin").innerText=u.coin;
-
-let inv=document.getElementById("inv");
-inv.innerHTML="";
-
-u.inv.forEach((i,idx)=>{
-let div=document.createElement("div");
+inv.forEach((i,idx)=>{
+let div = document.createElement("div");
 div.className="item";
 
 div.innerHTML=`
-<b>${i.name}</b><br>
-💰 $${i.value}<br>
+<div>${i.n} - $${i.v}</div>
 <button onclick="sell(${idx})">Sat</button>
-<button onclick="keep()">Envanterde Tut</button>
 `;
 
-inv.appendChild(div);
+box.appendChild(div);
 });
-
-save();
 }
 
 function sell(i){
-let u=users[current];
-u.coin+=u.inv[i].value;
-u.inv.splice(i,1);
-update();
+coin += inv[i].v;
+inv.splice(i,1);
+document.getElementById("coin").innerText=coin;
+loadInv();
 }
 
-function keep(){
-alert("Zaten envanterde 👍");
+/* ADMIN */
+function addCoin(){
+let a = prompt("Coin:");
+coin += Number(a);
+document.getElementById("coin").innerText=coin;
 }
 
-function giveCoin(){
-let a=prompt("Coin:");
-users[current].coin+=Number(a);
-update();
-}
-
-function uVal(){return document.getElementById("u").value}
-function pVal(){return document.getElementById("p").value}
-
-function save(){
-localStorage.setItem("users",JSON.stringify(users));
-}
+setInterval(loadInv,1000);
 
 </script>
 
