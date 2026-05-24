@@ -13,12 +13,13 @@ height:100vh;
 overflow:hidden;
 }
 
+/* CS2 BACKGROUND */
 .bg{
 position:absolute;
 width:100%;
 height:100%;
-background:url("https://images.unsplash.com/photo-1605901309584-818e25960a8f") center/cover no-repeat;
-filter:brightness(0.3);
+background:url("https://cdn.cloudflare.steamstatic.com/steam/apps/730/ss_0b3d4d1c7b0f5c3d6f1d2.jpg") center/cover no-repeat;
+filter:brightness(0.35);
 }
 
 .overlay{
@@ -85,48 +86,40 @@ font-weight:bold;
 text-shadow:0 0 20px #3b82f6;
 }
 
-.menu{
-margin-top:20px;
-display:flex;
-gap:10px;
-}
-
-.card{
-background:rgba(255,255,255,0.08);
-padding:15px;
-border-radius:12px;
-cursor:pointer;
-}
-
-#game{
-display:none;
-}
-
-.caseArea{
-display:flex;
-gap:10px;
-margin-top:20px;
-flex-wrap:wrap;
-}
-
-.case{
-background:rgba(255,255,255,0.08);
-padding:15px;
-width:180px;
-border-radius:10px;
-}
-
+/* CASE ROULETTE */
 #roulette{
-margin-top:20px;
-height:60px;
+margin-top:25px;
+height:90px;
 border:2px solid #3b82f6;
+border-radius:10px;
+overflow:hidden;
 display:flex;
 align-items:center;
 justify-content:center;
-border-radius:10px;
-font-size:18px;
+position:relative;
 }
 
+.scroll{
+display:flex;
+gap:10px;
+position:absolute;
+left:0;
+transition:transform 0.08s linear;
+}
+
+.itemBox{
+min-width:120px;
+height:70px;
+background:rgba(255,255,255,0.08);
+border-radius:10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-size:12px;
+}
+
+/* INVENTORY */
 .inv{
 margin-top:20px;
 display:flex;
@@ -141,7 +134,6 @@ padding:10px;
 border-radius:10px;
 }
 
-.small{font-size:12px;color:#aaa}
 </style>
 </head>
 
@@ -159,7 +151,7 @@ border-radius:10px;
 <input id="u" placeholder="Kullanıcı">
 <input id="p" placeholder="Şifre">
 <button onclick="login()">Giriş</button>
-<button onclick="register()" style="background:#22c55e">Kayıt Ol</button>
+<button onclick="register()" style="background:#22c55e">Kayıt</button>
 </div>
 </div>
 
@@ -174,19 +166,15 @@ border-radius:10px;
 ADMIN PANEL
 </div>
 
-<div class="caseArea">
-<div class="case">
-Normal Case (100$)
-<button onclick="openCase(100)">Aç</button>
+<div>
+<button onclick="openCase(100)">Normal Case</button>
+<button onclick="openCase(300)">Epic Case</button>
 </div>
 
-<div class="case">
-Epic Case (300$)
-<button onclick="openCase(300)">Aç</button>
+<!-- CS STYLE ROULETTE -->
+<div id="roulette">
+<div class="scroll" id="scroll"></div>
 </div>
-</div>
-
-<div id="roulette">🎰 Bekleniyor...</div>
 
 <h3>ENVANTER</h3>
 <div class="inv" id="inv"></div>
@@ -201,24 +189,22 @@ let users = JSON.parse(localStorage.getItem("users")||"{}");
 let current = null;
 
 const items = [
-{name:"AK-47 Redline",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_a_light_blue.png",value:50},
-{name:"AWP Asiimov",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp_cu_awp_asimov_light.png",value:120},
-{name:"M4A1-S Printstream",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_silencer_printstream.png",value:200},
-{name:"Karambit Fade",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_karambit_fade.png",value:500}
+{name:"AK-47 Redline",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47.png",value:50},
+{name:"AWP Asiimov",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp.png",value:120},
+{name:"M4A1-S Printstream",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_silencer.png",value:200},
+{name:"Karambit Fade",img:"https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_knife_karambit.png",value:500}
 ];
 
 function register(){
-let u=document.getElementById("u").value;
-let p=document.getElementById("p").value;
-
+let u=uVal();
+let p=pVal();
 users[u]={pass:p,coin:500,inv:[]};
-localStorage.setItem("users",JSON.stringify(users));
-alert("Kayıt başarılı");
+save();
 }
 
 function login(){
-let u=document.getElementById("u").value;
-let p=document.getElementById("p").value;
+let u=uVal();
+let p=pVal();
 
 if(!users[u]||users[u].pass!=p)return alert("Hata");
 
@@ -241,26 +227,45 @@ if(u.coin<price)return alert("Yetersiz");
 
 u.coin-=price;
 
-let i=0;
+let scroll=document.getElementById("scroll");
+scroll.innerHTML="";
+
+let loopItems=[];
+
+// CS STYLE BAR
+for(let i=0;i<30;i++){
+let it=items[Math.floor(Math.random()*items.length)];
+loopItems.push(it);
+
+scroll.innerHTML+=`
+<div class="itemBox">
+${it.name}
+</div>
+`;
+}
+
+let pos=0;
 let interval=setInterval(()=>{
-document.getElementById("roulette").innerText=items[i%items.length].name;
-i++;
-},80);
+pos-=10;
+scroll.style.transform=`translateX(${pos}px)`;
+},50);
 
 setTimeout(()=>{
 clearInterval(interval);
-let w=items[Math.floor(Math.random()*items.length)];
-document.getElementById("roulette").innerText="🎉 "+w.name;
-u.inv.push(w);
+
+let won=loopItems[Math.floor(Math.random()*loopItems.length)];
+alert("Kazandın: "+won.name);
+
+u.inv.push(won);
 update();
-},2000);
+
+},3000);
 
 }
 
 function update(){
 
 let u=users[current];
-
 document.getElementById("coin").innerText=u.coin;
 
 let inv=document.getElementById("inv");
@@ -269,16 +274,18 @@ inv.innerHTML="";
 u.inv.forEach((i,idx)=>{
 let div=document.createElement("div");
 div.className="item";
+
 div.innerHTML=`
-<img src="${i.img}" width="100"><br>
 <b>${i.name}</b><br>
 💰 $${i.value}<br>
 <button onclick="sell(${idx})">Sat</button>
+<button onclick="keep()">Envanterde Tut</button>
 `;
+
 inv.appendChild(div);
 });
 
-localStorage.setItem("users",JSON.stringify(users));
+save();
 }
 
 function sell(i){
@@ -288,10 +295,21 @@ u.inv.splice(i,1);
 update();
 }
 
+function keep(){
+alert("Zaten envanterde 👍");
+}
+
 function giveCoin(){
 let a=prompt("Coin:");
 users[current].coin+=Number(a);
 update();
+}
+
+function uVal(){return document.getElementById("u").value}
+function pVal(){return document.getElementById("p").value}
+
+function save(){
+localStorage.setItem("users",JSON.stringify(users));
 }
 
 </script>
