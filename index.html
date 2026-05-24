@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Case Opening</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+.center{
+  text-align:center;
+  margin-top:40px;
+}
+
+.box{
+  background:#1e293b;
+  padding:20px;
+  width:300px;
+  margin:20px auto;
+  border-radius:12px;
+}
+
+input{
+  width:90%;
+  padding:10px;
+  margin:5px;
+}
+
+button{
+  padding:10px;
+  width:95%;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+.hidden{display:none;}
+
+.case{
+  background:#111827;
+  padding:15px;
+  margin:10px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="center">
+
+<h1>CASE SYSTEM</h1>
+
+<!-- REGISTER -->
+<div id="registerBox" class="box">
+<h3>Kayıt Ol</h3>
+<input id="ruser" placeholder="Kullanıcı adı">
+<input id="rpass" placeholder="Şifre">
+<button onclick="register()">Kayıt Ol</button>
+<p onclick="showLogin()">Zaten hesabın var mı?</p>
+</div>
+
+<!-- LOGIN -->
+<div id="loginBox" class="box hidden">
+<h3>Giriş Yap</h3>
+<input id="luser" placeholder="Kullanıcı adı">
+<input id="lpass" placeholder="Şifre">
+<button onclick="login()">Giriş Yap</button>
+<p onclick="showRegister()">Hesap oluştur</p>
+</div>
+
+<!-- GAME -->
+<div id="game" class="hidden">
+
+<h2>Hoşgeldin: <span id="username"></span></h2>
+<h3>Coin: <span id="coin">1000</span></h3>
+
+<h2>KASALAR</h2>
+
+<div class="case">
+<h3>Normal Case (100 coin)</h3>
+<button onclick="openCase('normal')">Aç</button>
+</div>
+
+<div class="case">
+<h3>Premium Case (300 coin)</h3>
+<button onclick="openCase('premium')">Aç</button>
+</div>
+
+<h2>ENVANTER</h2>
+<div id="inv"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let users = JSON.parse(localStorage.getItem("users") || "{}");
+let currentUser = null;
+
+// SKIN DATABASE
+const cases = {
+  normal: [
+    {name:"AK-47 | Redline", chance:60, value:50},
+    {name:"USP-S | Orion", chance:25, value:80},
+    {name:"AWP | Asiimov", chance:10, value:200},
+    {name:"Karambit | Fade", chance:5, value:500}
+  ],
+  premium: [
+    {name:"M4A1-S | Printstream", chance:50, value:150},
+    {name:"AK-47 | Neon Rider", chance:30, value:250},
+    {name:"Butterfly Knife", chance:15, value:600},
+    {name:"Dragon Lore AWP", chance:5, value:1500}
+  ]
+};
+
+function showLogin(){
+  document.getElementById("registerBox").classList.add("hidden");
+  document.getElementById("loginBox").classList.remove("hidden");
+}
+
+function showRegister(){
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("registerBox").classList.remove("hidden");
+}
+
+function register(){
+  let u = document.getElementById("ruser").value;
+  let p = document.getElementById("rpass").value;
+
+  if(users[u]) return alert("Kullanıcı var!");
+
+  users[u] = {
+    pass:p,
+    coin:1000,
+    inv:[]
+  };
+
+  localStorage.setItem("users", JSON.stringify(users));
+  alert("Kayıt başarılı!");
+  showLogin();
+}
+
+function login(){
+  let u = document.getElementById("luser").value;
+  let p = document.getElementById("lpass").value;
+
+  if(!users[u] || users[u].pass !== p){
+    return alert("Hatalı giriş!");
+  }
+
+  currentUser = u;
+
+  document.getElementById("username").innerText = u;
+
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+
+  updateUI();
+}
+
+function openCase(type){
+
+  let user = users[currentUser];
+
+  let price = type === "normal" ? 100 : 300;
+
+  if(user.coin < price) return alert("Yetersiz coin");
+
+  user.coin -= price;
+
+  let items = cases[type];
+
+  let roll = Math.random() * 100;
+  let sum = 0;
+
+  let won = null;
+
+  for(let item of items){
+    sum += item.chance;
+    if(roll <= sum){
+      won = item;
+      break;
+    }
+  }
+
+  user.inv.push(won);
+
+  localStorage.setItem("users", JSON.stringify(users));
+
+  updateUI();
+
+  alert("Kazandın: " + won.name);
+}
+
+function updateUI(){
+
+  let user = users[currentUser];
+
+  document.getElementById("coin").innerText = user.coin;
+
+  let inv = document.getElementById("inv");
+  inv.innerHTML = "";
+
+  user.inv.forEach(i=>{
+    let div = document.createElement("div");
+    div.className = "case";
+    div.innerText = i.name + " | $" + i.value;
+    inv.appendChild(div);
+  });
+
+}
+
+</script>
+
+</body>
+</html>
